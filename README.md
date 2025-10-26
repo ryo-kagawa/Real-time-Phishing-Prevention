@@ -22,5 +22,5 @@ PORT=3001 node index.mjs
 
 ### ログイン情報
 
-ID: test
-PW: password
+- ID: test
+- PW: password
