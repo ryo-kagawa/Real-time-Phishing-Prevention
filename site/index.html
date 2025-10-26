@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>リアルタイムフィッシング対策概念実証</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <script>
+const key = CryptoJS.enc.Utf8.parse(`${document.location.host}/00000000000000000`);
+const iv = CryptoJS.enc.Utf8.parse("0000000000000000");
+
+window.onload = () => {
+  const submitButton = document.querySelector("button");
+  submitButton.addEventListener("click", (event) => {
+    const ID = document.querySelector("[name=\"ID\"]").value;
+    const PW = document.querySelector("[name=\"PW\"]").value;
+
+    const encrypted = CryptoJS.AES.encrypt(
+      JSON.stringify({ID, PW}),
+      key,
+      {
+        iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      },
+    );
+    const parameter = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+    fetch(
+      "http://localhost:3000/login",
+      {
+        method: "POST",
+        body: parameter,
+      },
+    );
+  });
+}
+    </script>
+  </head>
+  <body>
+    <div>
+      <div>リアルタイムフィッシング対策の概念実証</div>
+      <div>IDとPWは下の情報で確認可能です</div>
+      <div>localhost:3000の場合にのみログインが成功するようになっています</div>
+      <div>ID: test</div>
+      <div>PW: password</div>
+      <div>開発者ツールで結果を確認してください</div>
+    </div>
+    <div>
+      <label>
+        <span>ID</span>
+        <input name="ID" value="test">
+      </label>
+    </div>
+    <div>
+      <label>
+        <span>PW</span>
+        <input name="PW" value="password">
+      </label>
+    </div>
+    <button type="submit">送信</button>
+  </body>
+</html>
